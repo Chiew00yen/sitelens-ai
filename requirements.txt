@@ -1,0 +1,2 @@
+-r requirements-phase1.lock.txt
+google-cloud-firestore==2.34.1

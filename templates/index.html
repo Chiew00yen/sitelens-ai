@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SiteLens AI</title>
+<style>[hidden]{display:none!important}body{font:16px system-ui;max-width:760px;margin:40px auto;padding:0 20px;background:#f5f7f8;color:#142630}button{padding:12px 18px;background:#145b61;color:white;border:0;border-radius:6px;cursor:pointer}button:disabled{opacity:.5}img{display:block;max-width:100%;max-height:400px;margin:18px 0}article{background:white;padding:20px;border-radius:10px;margin:16px 0}h3{margin-bottom:5px}p{line-height:1.5}#error{color:#a22121;white-space:pre-wrap}small{color:#435965}a{color:#145b61}</style></head>
+<body><h1>SiteLens AI</h1><p>Turn Site Photos into Actionable Work Reports</p><h2>Upload Site Photo</h2>
+<input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview" hidden alt="Uploaded site photo — image-1">
+<button id="analyze" disabled>Analyze with Gemini</button><p id="status" role="status"></p><p id="error" role="alert"></p><div id="findings"></div>
+<a id="receipt" hidden>Download execution evidence</a><p><small>Field inspection assistant. Findings require human review; this is not an engineering or safety certification.</small></p>
+<script>
+const photo=document.getElementById('photo'), preview=document.getElementById('preview'), button=document.getElementById('analyze'), status=document.getElementById('status'), error=document.getElementById('error'), findings=document.getElementById('findings'), receipt=document.getElementById('receipt');
+let previewUrl, receiptUrl;
+photo.onchange=()=>{if(previewUrl)URL.revokeObjectURL(previewUrl);findings.replaceChildren();error.textContent='';status.textContent='';receipt.hidden=true;const file=photo.files[0];button.disabled=!file;preview.hidden=!file;if(file){previewUrl=URL.createObjectURL(file);preview.src=previewUrl;}};
+button.onclick=async()=>{button.disabled=true;photo.disabled=true;error.textContent='';findings.replaceChildren();receipt.hidden=true;status.textContent='Sending this photo to Google Gemini…';
+try{const form=new FormData();form.append('photo',photo.files[0]);const response=await fetch('/analyze',{method:'POST',body:form,headers:{'X-CSRF-Token':{{ csrf_token|tojson }},'X-Request-ID':crypto.randomUUID()}});const data=await response.json();if(!response.ok)throw Error(data.error||'Request failed');
+for(const f of data.findings){const card=document.createElement('article');for(const [label,key] of [['Observation','observation'],['Possible Concern','possible_concern'],['Recommended Action','recommended_action'],['Evidence','evidence_reference']]){const h=document.createElement('h3');h.textContent=label;const p=document.createElement('p');p.textContent=f[key];card.append(h,p);}const p=document.createElement('p');p.textContent='Visual confidence: '+f.confidence+' · Human review required: '+(f.needs_human_review?'Yes':'No');card.append(p);findings.append(card);}
+status.textContent=data.findings.length?'Gemini findings rendered.':'Gemini returned no actionable findings for this photo.';
+const record={...data.evidence,browser_render_verified:true,browser_rendered_at:new Date().toISOString(),rendered_finding_count:data.findings.length};if(receiptUrl)URL.revokeObjectURL(receiptUrl);receiptUrl=URL.createObjectURL(new Blob([JSON.stringify(record,null,2)],{type:'application/json'}));receipt.href=receiptUrl;receipt.download='sitelens-evidence-'+record.run_id+'.json';receipt.hidden=false;
+}catch(e){status.textContent='Analysis did not complete.';error.textContent=e.message;}finally{button.disabled=!photo.files[0];photo.disabled=false;}};
+</script></body></html>

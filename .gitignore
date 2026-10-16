@@ -1,0 +1,15 @@
+.env
+.env.*
+*.secret
+*.pem
+*.key
+*credentials*
+*token*
+__pycache__/
+*.pyc
+.venv/
+e2e-test.jpg
+j32h-response.html
+deployment-policy.json
+release-manifest.json
+j10a_private.py

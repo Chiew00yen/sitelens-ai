@@ -1,0 +1,14 @@
+*
+!Dockerfile
+!requirements.txt
+!requirements-phase1.lock.txt
+!requirements.lock.txt
+!app.py
+!phase1.py
+!judge_access.py
+!gunicorn.conf.py
+!templates/
+!templates/index.html
+!templates/judge.html
+!.dockerignore
+!.gcloudignore
