@@ -38,6 +38,8 @@ Maximum image size: 8 MiB.
 
 ## Verified Prototype Evidence
 
+### Historical API verification
+
 A production end-to-end test successfully submitted a real JPEG through the deployed Judge service.
 
 Verified results:
@@ -47,9 +49,25 @@ Verified results:
 - Structured findings: 3
 - Human-review flags: Present
 
-Separately, 14 isolated mock guard tests passed.
+### Isolated mock tests
+
+Separately, 14 isolated mock guard tests passed. These tests used mock dependencies and are distinct from production verification.
+
+### J37 Production Browser Acceptance
+
+- Evaluator Access Code login: PASS
+- Real photo upload: PASS
+- Gemini 2.5 Flash analysis: PASS
+- Three structured findings rendered in the browser: PASS
+
+Human review remains required. During this J37 acceptance test, Global and Grant usage each increased by one, with limits unchanged during that test.
 
 This is functional verification, not an accuracy, latency, throughput or scalability benchmark.
+It does not establish complete source-to-production equivalence or measured productivity improvements.
+
+## Final Demo Video
+
+[SiteLens AI — Final Demo Video V3 (3:27)](https://drive.google.com/file/d/1HKN7DD78RPHKQrzMEbB2TZ6_P0tjzyqt/view?usp=sharing)
 
 ## Security Design
 
@@ -93,7 +111,7 @@ No production access credentials are distributed in this repository.
 
 https://sitelens-judge-415043547033.asia-southeast1.run.app/judge
 
-Access requires a valid demonstration code.
+Access requires a privately supplied valid demonstration code. Access is time-limited and usage-controlled.
 
 ## Competition
 
